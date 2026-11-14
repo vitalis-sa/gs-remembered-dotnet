@@ -133,33 +133,10 @@ dotnet test
 
 | Tipo | O que cobre |
 | --- | --- |
-| Unidade (33) | Regra de vínculo, claim `idosos` sempre em array, hash e conferência de senha, filtro de idempotência (mesmo corpo, corpo diferente, sem chave), alerta sem duplicata, validações |
+| Unidade (29) | Regra de vínculo, claim `idosos` sempre em array, hash e conferência de senha, filtro de idempotência (mesmo corpo, corpo diferente, sem chave), alerta sem duplicata, validações |
 | Integração (26) | `WebApplicationFactory` com SQLite em memória e um `HttpMessageHandler` falso no lugar da Java: login e 401/403, vínculo, idempotência ponta a ponta, 429 na 4ª chamada de relatório, 502 e 503 quando a Java falha, `/health` Healthy e Degraded, alertas |
 
 O projeto de integração roda em `net10.0` quando o SDK instalado é o 10, porque o `TestServer` precisa ser da mesma versão do runtime ASP.NET. Com o SDK 8 (pipeline) ele roda em `net8.0`.
-
-## Nuvem (Azure DevOps e App Service)
-
-| Arquivo | O que faz |
-| --- | --- |
-| `scripts/01-provisionar.sh` | Grupo `rg-cuidar-de-perto`, plano Linux B1 e Web App `cuidar-de-perto-dotnet-rm<RM>` com .NET 8, Always On e health check em `/health`. Com `BANCO=aci`, sobe também um Oracle XE em container (plano B) |
-| `scripts/02-configurar-app.sh` | Grava os App Settings a partir de variáveis do terminal (`DB_USER`, `DB_PASSWORD` ou `ORACLE_CONNECTION`, `JWT_SECRET`, `JAVA_BASE_URL`, `CLOUDAMQP_URL`) e reinicia o app |
-| `scripts/99-destruir.sh` | Lista e apaga o grupo de recursos depois de confirmar o nome |
-| `azure-pipelines.yml` | Gatilho só na `main`: restore, build, test com resultados e cobertura publicados, publish, artefato `.zip` e deploy com `AzureWebApp@1`, conferindo `/health` no fim |
-
-```bash
-az login
-RM=561489 ./scripts/01-provisionar.sh
-RM=561489 ./scripts/02-configurar-app.sh
-```
-
-No Azure DevOps, o pipeline precisa de:
-
-- conexão de serviço `sc-cuidar-de-perto` (Azure Resource Manager) com acesso ao grupo;
-- grupo de variáveis `cuidar-de-perto-segredos` com `ORACLE_CONNECTION`, `JWT_SECRET`, `CLOUDAMQP_URL` e `JAVA_BASE_URL`, todos marcados como secretos;
-- ambiente `producao` e branch `main` protegida (PR obrigatório, 1 revisor, work item vinculado).
-
-O banco precisa das tabelas de `scripts/script-bd.sql`. No Oracle da FIAP elas ficam no mesmo schema das `TB_` da API Java.
 
 ## Limitações conhecidas
 
