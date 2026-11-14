@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    O TestServer precisa ser da mesma versão do runtime ASP.NET que roda os testes.
+    Com SDK 10 (máquina sem runtime 8) os testes rodam em net10.0; com SDK 8 (pipeline), em net8.0.
+  -->
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <UsarNet10 Condition="$([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '10.0'))">true</UsarNet10>
+    <TargetFramework Condition="'$(UsarNet10)' == 'true'">net10.0</TargetFramework>
+    <VersaoMvcTesting Condition="'$(UsarNet10)' == 'true'">10.0.0</VersaoMvcTesting>
+    <VersaoMvcTesting Condition="'$(UsarNet10)' != 'true'">8.0.11</VersaoMvcTesting>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(VersaoMvcTesting)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.11" />    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="Shouldly" Version="4.2.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\CuidarDePerto.Api\CuidarDePerto.Api.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+    <Using Include="Shouldly" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,15 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Avisos de vulnerabilidade do NuGet aparecem, mas não quebram o build. -->
+    <WarningsNotAsErrors>NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
+    <!-- .NET 8 saiu de suporte em 10/11/2026; o plano do grupo fixa net8.0. -->
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
+    <!-- Permite rodar localmente em máquinas que só têm o runtime 9 ou 10. -->
+    <RollForward>Major</RollForward>
+  </PropertyGroup>
+</Project>
