@@ -19,7 +19,7 @@
 - Bug na Java: `TRG_AUDITORIA_MEDICAMENTO` (V1__schema_inicial.sql) está INVALID com ORA-00920, porque usa `INSERTING`/`DELETING` dentro do INSERT. Todo POST de medicamento dá 500. Correção: nova migration V2 com `CREATE OR REPLACE TRIGGER` calculando os valores em variáveis PL/SQL antes do INSERT.
 - Depois do conserto do trigger, repetir o `dose.pulada` publicado pelo job da Java (hoje testado com mensagem no formato da Java publicada direto no CloudAMQP).
 - Dados de teste no Oracle: idosos 1 a 4 (`*@teste.dev`), cuidadores 1 e 2, vínculos, 1 alerta, 1 relatório.
-- Seção 8 (DevOps): `azure-pipelines.yml` e scripts `01-provisionar.sh`, `02-configurar-app.sh`, `99-destruir.sh`.
+- Seção 8 (DevOps): cancelada a pedido do usuário em 2026-11-14 (pipeline e scripts revertidos).
 
 ## Contexto
 

@@ -133,7 +133,7 @@ dotnet test
 
 | Tipo | O que cobre |
 | --- | --- |
-| Unidade (29) | Regra de vínculo, claim `idosos` sempre em array, hash e conferência de senha, filtro de idempotência (mesmo corpo, corpo diferente, sem chave), alerta sem duplicata, validações |
+| Unidade (33) | Regra de vínculo, claim `idosos` sempre em array, hash e conferência de senha, filtro de idempotência (mesmo corpo, corpo diferente, sem chave), alerta sem duplicata, validações |
 | Integração (26) | `WebApplicationFactory` com SQLite em memória e um `HttpMessageHandler` falso no lugar da Java: login e 401/403, vínculo, idempotência ponta a ponta, 429 na 4ª chamada de relatório, 502 e 503 quando a Java falha, `/health` Healthy e Degraded, alertas |
 
 O projeto de integração roda em `net10.0` quando o SDK instalado é o 10, porque o `TestServer` precisa ser da mesma versão do runtime ASP.NET. Com o SDK 8 (pipeline) ele roda em `net8.0`.
