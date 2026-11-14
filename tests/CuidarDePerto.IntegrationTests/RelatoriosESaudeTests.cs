@@ -8,7 +8,7 @@ namespace CuidarDePerto.IntegrationTests;
 
 public class RelatoriosTests(CuidarFactory f) : IClassFixture<CuidarFactory>
 {
-    private static readonly object Periodo = new { periodoInicio = "2026-11-07", periodoFim = "2026-11-13" };
+    private static readonly object Periodo = new { dias = 7 };
 
     private static HttpRequestMessage Post(long idosoId, string chave) =>
         new(HttpMethod.Post, $"/api/v1/idosos/{idosoId}/relatorios-adesao")

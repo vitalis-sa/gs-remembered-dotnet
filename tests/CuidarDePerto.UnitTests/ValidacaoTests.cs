@@ -21,13 +21,17 @@ public class ValidacaoTests
         erros.Keys.ShouldBe(["especialidade", "localId", "dataHora"], ignoreOrder: true);
     }
 
-    [Fact(DisplayName = "VAL-03: relatório recusa fim antes do início")]
-    public void Relatorio_fim_antes() =>
-        new RelatorioRequest(new DateOnly(2026, 11, 10), new DateOnly(2026, 11, 1)).Validar().ShouldContainKey("periodoFim");
+    [Theory(DisplayName = "VAL-03: relatório recusa período fora de 1 a 90 dias, como a Java")]
+    [InlineData(0)]
+    [InlineData(91)]
+    public void Relatorio_fora_do_limite(int dias) =>
+        new RelatorioRequest(dias).Validar().ShouldContainKey("dias");
 
-    [Fact(DisplayName = "VAL-04: relatório de 7 dias é válido")]
-    public void Relatorio_valido() =>
-        new RelatorioRequest(new DateOnly(2026, 11, 7), new DateOnly(2026, 11, 13)).Validar().ShouldBeEmpty();
+    [Theory(DisplayName = "VAL-04: relatório de 7 dias ou sem período (padrão da Java) é válido")]
+    [InlineData(7)]
+    [InlineData(null)]
+    public void Relatorio_valido(int? dias) =>
+        new RelatorioRequest(dias).Validar().ShouldBeEmpty();
 
     [Theory(DisplayName = "VAL-05: colunas seguem o padrão do DDL Oracle")]
     [InlineData("CuidadorId", "CUIDADOR_ID")]

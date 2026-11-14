@@ -18,6 +18,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Oracle.EntityFrameworkCore.Infrastructure;
 using Polly;
 
 namespace CuidarDePerto.Api.Infra;
@@ -49,7 +50,9 @@ public static class Configuracao
 
         s.AddSingleton(TimeProvider.System);
         s.AddDbContext<AppDbContext>((sp, o) =>
-            o.UseOracle(sp.GetRequiredService<IConfiguration>().GetConnectionString("Oracle") ?? ""));
+            // O Oracle da FIAP é 19c: sem isto o provider 8.23 gera TRUE/FALSE (sintaxe do 23ai) e dá ORA-00904.
+            o.UseOracle(sp.GetRequiredService<IConfiguration>().GetConnectionString("Oracle") ?? "",
+                ora => ora.UseOracleSQLCompatibility(OracleSQLCompatibility.DatabaseVersion19)));
 
         s.AddProblemDetails(o => o.CustomizeProblemDetails = ProblemDetailsConfig.Customizar);
         s.AddExceptionHandler<ExcecaoHandler>();

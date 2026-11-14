@@ -4,16 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CuidarDePerto.Api.Features.Relatorios;
 
-public sealed record RelatorioRequest(DateOnly? PeriodoInicio, DateOnly? PeriodoFim) : IValidavel
+/// <summary>Mesmo corpo do RelatorioAdesaoRequest da Java: dias até hoje, de 1 a 90; vazio vale 7.</summary>
+public sealed record RelatorioRequest(int? Dias) : IValidavel
 {
     public const int MaximoDias = 90;
 
     public IDictionary<string, string[]> Validar() => new Validador()
-        .Regra("periodoInicio", PeriodoInicio is not null, "Informe o início do período.")
-        .Regra("periodoFim", PeriodoFim is not null, "Informe o fim do período.")
-        .Regra("periodoFim", PeriodoInicio is null || PeriodoFim is null || PeriodoFim >= PeriodoInicio, "O fim não pode ser antes do início.")
-        .Regra("periodoFim", PeriodoInicio is null || PeriodoFim is null || PeriodoFim.Value.DayNumber - PeriodoInicio.Value.DayNumber < MaximoDias,
-            $"Período de no máximo {MaximoDias} dias.")
+        .Regra("dias", Dias is null || Dias is >= 1 and <= MaximoDias, $"Período de 1 a {MaximoDias} dias.")
         .Erros;
 }
 
