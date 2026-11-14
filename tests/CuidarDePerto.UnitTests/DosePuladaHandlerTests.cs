@@ -29,7 +29,28 @@ public sealed class DosePuladaHandlerTests : IDisposable
 
     private static DosePuladaEvento Evento(string eventId = "e1", long doseId = 500, string severidade = "ALTA") =>
         new(eventId, doseId, 10, "Maria", "Losartana", severidade,
-            new DateTimeOffset(2026, 11, 14, 8, 0, 0, TimeSpan.FromHours(-3)), DateTimeOffset.UtcNow);
+            new DateTime(2026, 11, 14, 8, 0, 0), new DateTime(2026, 11, 14, 8, 30, 0));
+
+    /// <summary>Corpo exato que a API Java publica: LocalDateTime sem fuso, hora de Brasília.</summary>
+    private const string JsonDaJava = """
+        {"eventId":"e9","doseId":501,"idosoId":10,"idosoNome":"Maria","medicamentoNome":"Losartana",
+         "severidade":"ALTA","horarioPrevisto":"2026-11-14T08:00:00","ocorridoEm":"2026-11-14T08:30:00"}
+        """;
+
+    [Fact(DisplayName = "ALE-07: lê o dose.pulada da Java (LocalDateTime sem fuso) como hora de Brasília")]
+    public void Le_evento_da_java()
+    {
+        var e = System.Text.Json.JsonSerializer.Deserialize<DosePuladaEvento>(JsonDaJava, CuidarDePerto.Api.Comum.JsonPadrao.Opcoes)!;
+        e.DoseId.ShouldBe(501);
+        DosePuladaHandler.Corpo(e).ShouldBe("Maria não confirmou a dose das 08:00");
+    }
+
+    [Fact(DisplayName = "ALE-08: horário com fuso explícito é convertido para Brasília")]
+    public void Horario_com_fuso()
+    {
+        var e = Evento() with { HorarioPrevisto = new DateTime(2026, 11, 14, 11, 0, 0, DateTimeKind.Utc) };
+        DosePuladaHandler.Corpo(e).ShouldBe("Maria não confirmou a dose das 08:00");
+    }
 
     private async Task<int> ProcessarAsync(DosePuladaEvento e)
     {

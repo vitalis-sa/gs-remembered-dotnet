@@ -26,7 +26,7 @@ namespace CuidarDePerto.IntegrationTests;
 public sealed class CuidarFactory : WebApplicationFactory<Program>
 {
     public const string ChaveJwt = "chave-de-teste-com-pelo-menos-32-bytes!!";
-    public const string IssuerJava = "cuidar-de-perto-java";
+    public const string IssuerJava = "remembered-java";
 
     private readonly SqliteConnection _conexao = new("DataSource=:memory:");
 
@@ -38,8 +38,8 @@ public sealed class CuidarFactory : WebApplicationFactory<Program>
         _conexao.Open();
         builder.UseEnvironment("Testing");
         builder.UseSetting("Jwt:Key", ChaveJwt);
-        builder.UseSetting("Jwt:Issuer", "cuidar-de-perto-dotnet");
-        builder.UseSetting("Jwt:Audience", "cuidar-de-perto");
+        builder.UseSetting("Jwt:Issuer", "remembered-dotnet");
+        builder.UseSetting("Jwt:Audience", "remembered");
         builder.UseSetting("Jwt:IssuersAceitos:0", IssuerJava);
         builder.UseSetting("Java:BaseUrl", "http://java.test");
         builder.UseSetting("RabbitMq:Enabled", "false");
@@ -72,7 +72,7 @@ public sealed class CuidarFactory : WebApplicationFactory<Program>
     public static string TokenIdoso(long idosoId) => new JsonWebTokenHandler().CreateToken(new SecurityTokenDescriptor
     {
         Issuer = IssuerJava,
-        Audience = "cuidar-de-perto",
+        Audience = "remembered",
         Expires = DateTime.UtcNow.AddHours(1),
         SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(ChaveJwt)), SecurityAlgorithms.HmacSha256),
         Claims = new Dictionary<string, object> { ["sub"] = idosoId.ToString(), ["role"] = "IDOSO", ["nome"] = "Maria" },

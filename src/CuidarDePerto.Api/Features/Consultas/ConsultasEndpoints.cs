@@ -116,7 +116,7 @@ public static class ConsultasEndpoints
         var eventId = Guid.NewGuid().ToString();
         await publicador.PublicarAsync(RotasEventos.ConsultaCriada, eventId, new ConsultaCriadaEvento(
             eventId, consulta.Id, idosoId, consulta.CriadoPorNome, consulta.CriadoPorTipo,
-            consulta.Especialidade, consulta.DataHora, local.Nome), ct);
+            consulta.Especialidade, HoraBrasil.DeUtc(consulta.DataHora), local.Nome), ct);
 
         return Results.Created($"/api/v1/consultas/{consulta.Id}", ConsultaResponse.De(consulta, local));
     }

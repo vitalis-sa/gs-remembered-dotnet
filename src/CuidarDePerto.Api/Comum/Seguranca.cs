@@ -31,8 +31,8 @@ public sealed class JwtOptions
 {
     public const string Secao = "Jwt";
     public string Key { get; set; } = "";
-    public string Issuer { get; set; } = "cuidar-de-perto-dotnet";
-    public string Audience { get; set; } = "cuidar-de-perto";
+    public string Issuer { get; set; } = "remembered-dotnet";
+    public string Audience { get; set; } = "remembered";
     /// <summary>Emissores aceitos além do próprio (o da API Java).</summary>
     public string[] IssuersAceitos { get; set; } = [];
     public int ExpiracaoHoras { get; set; } = 24;

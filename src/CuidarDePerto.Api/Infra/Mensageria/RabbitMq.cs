@@ -20,8 +20,8 @@ public sealed class RabbitMqOptions
 /// <summary>Nomes combinados com a API Java.</summary>
 public static class Topologia
 {
-    public const string Exchange = "cuidar.eventos";
-    public const string ExchangeMortas = "cuidar.eventos.dlx";
+    public const string Exchange = "remembered.eventos";
+    public const string ExchangeMortas = "remembered.eventos.dlx";
 
     public const string FilaAlertas = "cuidador.alerta-dose";
     public const string FilaAlertasRetry = "cuidador.alerta-dose.retry";

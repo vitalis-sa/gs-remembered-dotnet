@@ -9,13 +9,13 @@ public sealed record ConsultaCriadaEvento(
     string EventId,
     long ConsultaId,
     long IdosoId,
-    string CuidadorNome,
+    string CriadoPorNome,
     string CriadoPorTipo,
     string Especialidade,
     DateTime DataHora,
     string LocalNome);
 
-/// <summary>Mensagem de dose.pulada publicada pela Java. HorarioPrevisto deve vir em ISO-8601 com fuso.</summary>
+/// <summary>Mensagem de dose.pulada publicada pela Java. A Java manda LocalDateTime sem fuso (hora de Brasília).</summary>
 public sealed record DosePuladaEvento(
     string EventId,
     long DoseId,
@@ -23,12 +23,12 @@ public sealed record DosePuladaEvento(
     string IdosoNome,
     string MedicamentoNome,
     string Severidade,
-    DateTimeOffset HorarioPrevisto,
-    DateTimeOffset OcorridoEm);
+    DateTime HorarioPrevisto,
+    DateTime OcorridoEm);
 
 public interface IPublicadorEventos
 {
-    /// <summary>Publica no exchange cuidar.eventos. Chamado depois do commit no Oracle.</summary>
+    /// <summary>Publica no exchange remembered.eventos. Chamado depois do commit no Oracle.</summary>
     Task PublicarAsync(string routingKey, string eventId, object evento, CancellationToken ct);
 }
 

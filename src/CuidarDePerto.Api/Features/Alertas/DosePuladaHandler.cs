@@ -1,3 +1,4 @@
+using CuidarDePerto.Api.Comum;
 using CuidarDePerto.Api.Infra.Data;
 using CuidarDePerto.Api.Infra.Mensageria;
 using CuidarDePerto.Api.Infra.Push;
@@ -11,8 +12,6 @@ namespace CuidarDePerto.Api.Features.Alertas;
 /// </summary>
 public sealed class DosePuladaHandler(AppDbContext db, IPushSender push, TimeProvider tempo, ILogger<DosePuladaHandler> log)
 {
-    private static readonly TimeZoneInfo FusoBrasil = CarregarFuso();
-
     /// <returns>Quantidade de alertas criados.</returns>
     public async Task<int> ProcessarAsync(DosePuladaEvento evento, CancellationToken ct)
     {
@@ -74,16 +73,7 @@ public sealed class DosePuladaHandler(AppDbContext db, IPushSender push, TimePro
 
     public static string Corpo(DosePuladaEvento e)
     {
-        var hora = TimeZoneInfo.ConvertTime(e.HorarioPrevisto, FusoBrasil);
+        var hora = HoraBrasil.ParaBrasil(e.HorarioPrevisto);
         return $"{e.IdosoNome} não confirmou a dose das {hora:HH\\:mm}";
-    }
-
-    private static TimeZoneInfo CarregarFuso()
-    {
-        try { return TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo"); }
-        catch (Exception ex) when (ex is TimeZoneNotFoundException or InvalidTimeZoneException)
-        {
-            return TimeZoneInfo.CreateCustomTimeZone("BRT", TimeSpan.FromHours(-3), "Brasília", "Brasília");
-        }
     }
 }

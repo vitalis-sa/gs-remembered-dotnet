@@ -10,7 +10,7 @@ Stack: .NET 8, Minimal API, EF Core com Oracle, JWT Bearer, RabbitMQ.Client 6, P
 App (React Native) ──REST+JWT──► API .NET ──HTTP (token do cuidador)──► API Java
                                     │  ▲
               consulta.criada ──────┘  └────── dose.pulada
-                                 RabbitMQ (exchange cuidar.eventos, topic)
+                                 RabbitMQ (exchange remembered.eventos, topic)
                                     │
                                Oracle (tabelas NET_*)
 ```
@@ -37,9 +37,9 @@ App (React Native) ──REST+JWT──► API .NET ──HTTP (token do cuidado
 | --- | --- |
 | `ConnectionStrings__Oracle` | Conexão Oracle, ex.: `User Id=RM00000;Password=...;Data Source=oracle.fiap.com.br:1521/ORCL` |
 | `Jwt__Key` | Chave HS256 com pelo menos 32 bytes. A mesma da API Java |
-| `Jwt__Issuer` | Emissor deste token (`cuidar-de-perto-dotnet`) |
-| `Jwt__Audience` | Audience comum às duas APIs (`cuidar-de-perto`) |
-| `Jwt__IssuersAceitos__0` | Emissor da API Java (`cuidar-de-perto-java`) |
+| `Jwt__Issuer` | Emissor deste token (`remembered-dotnet`) |
+| `Jwt__Audience` | Audience comum às duas APIs (`remembered`) |
+| `Jwt__IssuersAceitos__0` | Emissor da API Java (`remembered-java`) |
 | `Java__BaseUrl` | Raiz da API Java, ex.: `https://cuidar-java.azurewebsites.net` |
 | `RabbitMq__Enabled` | `false` desliga publicação e consumo |
 | `RabbitMq__Uri` | URI AMQP completa (CloudAMQP). Se vazia, usa `RabbitMq__Host`, `__Port`, `__Usuario`, `__Senha` |
@@ -96,16 +96,16 @@ Janela fixa de 1 minuto: 3 relatórios por cuidador (cada um custa uma chamada a
 | `dose.pulada` | Consome da fila `cuidador.alerta-dose` | Cria um `NET_ALERTA` por cuidador vinculado (no máximo um por dose) e envia push pelo Expo |
 | `consulta.criada` | Publica depois do commit | A Java grava `TB_AVISO` e avisa o idoso quando `criadoPorTipo` é `CUIDADOR` |
 
-Contrato das mensagens (JSON em camelCase, datas em ISO-8601 com fuso):
+Contrato das mensagens (JSON em camelCase, datas em ISO-8601 sem fuso, na hora de Brasília, como o LocalDateTime da Java):
 
 ```json
 // dose.pulada (publicado pela Java)
 { "eventId": "uuid", "doseId": 500, "idosoId": 10, "idosoNome": "Maria", "medicamentoNome": "Losartana",
-  "severidade": "ALTA", "horarioPrevisto": "2026-11-14T08:00:00-03:00", "ocorridoEm": "2026-11-14T08:31:00-03:00" }
+  "severidade": "ALTA", "horarioPrevisto": "2026-11-14T08:00:00", "ocorridoEm": "2026-11-14T08:31:00" }
 
 // consulta.criada (publicado por esta API)
-{ "eventId": "uuid", "consultaId": 7, "idosoId": 10, "cuidadorNome": "Ana", "criadoPorTipo": "CUIDADOR",
-  "especialidade": "Cardiologia", "dataHora": "2026-11-20T17:00:00Z", "localNome": "Clínica Centro" }
+{ "eventId": "uuid", "consultaId": 7, "idosoId": 10, "criadoPorNome": "Ana", "criadoPorTipo": "CUIDADOR",
+  "especialidade": "Cardiologia", "dataHora": "2026-11-20T14:00:00", "localNome": "Clínica Centro" }
 ```
 
 O consumidor usa confirmação manual. Uma falha volta à fila depois de 5 s e de 25 s pela fila `cuidador.alerta-dose.retry`. Na terceira falha a mensagem vai para `cuidador.alerta-dose.dlq`. Cada `eventId` processado fica em `NET_EVENTO_PROCESSADO`, e a restrição única (`cuidador_id`, `dose_id`) impede alerta duplicado.

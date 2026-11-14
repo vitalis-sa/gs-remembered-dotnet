@@ -38,8 +38,8 @@ public class TokenServiceTests
     private static TokenService Servico() => new(Options.Create(new JwtOptions
     {
         Key = Chave,
-        Issuer = "cuidar-de-perto-dotnet",
-        Audience = "cuidar-de-perto",
+        Issuer = "remembered-dotnet",
+        Audience = "remembered",
     }), new RelogioFixo(DateTimeOffset.UtcNow));
 
     private static JsonElement Payload(string token)
@@ -71,8 +71,8 @@ public class TokenServiceTests
 
         var resultado = await new JsonWebTokenHandler().ValidateTokenAsync(token, new TokenValidationParameters
         {
-            ValidIssuer = "cuidar-de-perto-dotnet",
-            ValidAudience = "cuidar-de-perto",
+            ValidIssuer = "remembered-dotnet",
+            ValidAudience = "remembered",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Chave)),
         });
         resultado.IsValid.ShouldBeTrue();

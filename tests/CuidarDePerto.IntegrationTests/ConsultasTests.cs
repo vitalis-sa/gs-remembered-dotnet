@@ -36,7 +36,13 @@ public class ConsultasTests(CuidarFactory f) : IClassFixture<CuidarFactory>
 
         var evento = f.Publicador.Publicados.Select(p => p.Evento).OfType<ConsultaCriadaEvento>().Single(e => e.IdosoId == idosoId);
         evento.CriadoPorTipo.ShouldBe("CUIDADOR");
-        evento.CuidadorNome.ShouldBe("Ana Teste");
+        evento.CriadoPorNome.ShouldBe("Ana Teste");
+        // Nomes que o record ConsultaCriada da Java lê.
+        var json = JsonSerializer.SerializeToElement(evento, CuidarDePerto.Api.Comum.JsonPadrao.Opcoes);
+        foreach (var campo in new[] { "eventId", "consultaId", "idosoId", "especialidade", "dataHora", "criadoPorTipo", "criadoPorNome" })
+            json.TryGetProperty(campo, out _).ShouldBeTrue(campo);
+        // LocalDateTime da Java: hora de Brasília, sem "Z" nem offset.
+        json.GetProperty("dataHora").GetString().ShouldBe(Futuro.ToOffset(TimeSpan.FromHours(-3)).ToString("yyyy-MM-ddTHH:mm:ss"));
         evento.Especialidade.ShouldBe("Cardiologia");
 
         var lista = await c.GetFromJsonAsync<JsonElement>($"/api/v1/idosos/{idosoId}/consultas");
