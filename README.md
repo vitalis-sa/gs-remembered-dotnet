@@ -1,5 +1,7 @@
 # Cuidar de Perto · API .NET (cuidador)
 
+Integrantes: Ana Flavia Camelo (RM561489), Gustavo Kenji Terada (RM562745), João Guilherme Carvalho Novaes (RM566234), Pedro Chasci Puga (RM565154) e Lucas Figueiredo Vieira (RM561342).
+
 A API .NET atende o cuidador: cadastro e login com JWT, vínculo com idosos por código de pareamento, alertas de dose pulada, consultas, locais de atendimento e pedido de relatórios de adesão. O relatório é repassado à API Java, onde está o LLM.
 
 Stack: .NET 8, Minimal API, EF Core com Oracle, JWT Bearer, RabbitMQ.Client 6, Polly (Microsoft.Extensions.Http.Resilience), Swagger (Swashbuckle), xUnit e WebApplicationFactory.
@@ -30,6 +32,8 @@ App (React Native) ──REST+JWT──► API .NET ──HTTP (token do cuidado
 3. Configure as variáveis de ambiente (modelo em `.env.example`).
 4. Rode a API: `dotnet run --project src/CuidarDePerto.Api`.
 5. Abra o Swagger em http://localhost:5080/swagger. Use o botão Authorize com o token do login.
+
+Publicação no Azure, credenciais e montagem da entrega: [docs/MANUAL-DEPLOY.md](docs/MANUAL-DEPLOY.md).
 
 ### Variáveis de ambiente
 

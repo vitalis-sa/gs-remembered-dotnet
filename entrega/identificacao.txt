@@ -1,0 +1,24 @@
+GLOBAL SOLUTION 2026/2 · CITIZENTECH
+Disciplina: Advanced Business Development with .NET
+Projeto: Cuidar de Perto · API .NET do cuidador
+
+Turma: <TURMA>
+
+Integrantes
+- Ana Flavia Camelo · RM561489
+- Gustavo Kenji Terada · RM562745
+- João Guilherme Carvalho Novaes · RM566234
+- Pedro Chasci Puga · RM565154
+- Lucas Figueiredo Vieira · RM561342
+
+Repositório GitHub
+https://github.com/vitalis-sa/gs-remembered-dotnet
+
+Repositório da API Java (consumida por esta API)
+https://github.com/vitalis-sa/gs-remembered-java
+
+API publicada (Swagger)
+<URL DO SWAGGER, ex.: https://cuidar-dotnet.azurewebsites.net/swagger>
+
+Vídeo / apresentação (se houver)
+<LINK>
