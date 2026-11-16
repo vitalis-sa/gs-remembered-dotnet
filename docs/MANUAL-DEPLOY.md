@@ -6,19 +6,25 @@ Este manual leva a API do zero até uma URL pública que o app mobile consome. S
 
 | Item | Onde conseguir | Quem guarda |
 | --- | --- | --- |
-| Usuário e senha do Oracle FIAP (RM do dono do schema) | Portal FIAP, e-mail de acesso ao banco | Só o dono do RM |
-| Chave JWT de pelo menos 32 caracteres | Gerada uma vez pelo grupo (comando na seção 2) | Mesmo valor na API .NET e na API Java |
-| URL da API Java publicada | Deploy do repositório `gs-remembered-java` | Público |
-| URI do RabbitMQ (`amqps://...`) | Painel do CloudAMQP, instância do grupo, campo "AMQP URL" | Mesmo broker na .NET e na Java |
+| Senha do usuário `REMEMBERED` no Oracle do Azure | Quem criou o container `rm566234-gs-oracle` (RM566234) | Só o grupo |
+| Chave JWT de pelo menos 32 caracteres | App Settings da Web App Java `rm566234-gs-api` (seção 2) | Mesmo valor na API .NET e na API Java |
+| URL da API Java publicada | `https://rm566234-gs-api.azurewebsites.net` (já no ar) | Público |
+| URI do RabbitMQ (`amqps://...`) | Painel do CloudAMQP, mesma instância da Java (exchange `remembered.eventos`), campo "AMQP URL" | Mesmo broker na .NET e na Java |
 | Conta Azure com crédito (Azure for Students) | portal.azure.com | Quem faz o deploy |
 | Azure CLI instalada e logada | `az login` | Quem faz o deploy |
 | Token de acesso do Expo (opcional) | expo.dev, Access Tokens, só se o push seguro estiver ligado | Quem faz o deploy |
 
 A chave do Groq (LLM dos relatórios) fica só na API Java. A API .NET não usa essa chave.
 
-## 2. Gerar a chave JWT (uma vez para o grupo)
+## 2. Chave JWT
 
-PowerShell:
+A API Java já está publicada, então a chave já existe. Copie o valor do portal do Azure: Web App `rm566234-gs-api`, Configurações, Variáveis de ambiente. Ou, com acesso à assinatura do RM566234:
+
+```bash
+az webapp config appsettings list -g <grupo-da-java> -n rm566234-gs-api --query "[?contains(name,'JWT') || contains(name,'Jwt')]"
+```
+
+Só gere uma chave nova se o grupo decidir trocar a da Java também. Comando em PowerShell:
 
 ```powershell
 [Convert]::ToBase64String((1..48 | ForEach-Object { Get-Random -Maximum 256 }))
@@ -34,16 +40,26 @@ O resultado vai em `Jwt__Key` aqui e na variável equivalente da API Java. Se as
 
 ## 3. Banco Oracle
 
-1. Abra o SQL Developer com o usuário do RM que vai hospedar as tabelas.
-2. Rode `scripts/script-bd.sql` inteiro (F5). Ele cria 7 tabelas `NET_` e 2 locais semente.
-3. Confira com `SELECT TABLE_NAME FROM USER_TABLES WHERE TABLE_NAME LIKE 'NET_%';` (devem voltar 7 linhas).
+O banco de produção é um Oracle Free num container do Azure, compartilhado com a API Java.
 
-O schema já foi criado no RM561489. Pule esta seção se for usar o mesmo RM.
+| Campo | Valor |
+| --- | --- |
+| Host | `rm566234-gs-oracle.eastus.azurecontainer.io` |
+| Porta | `1521` |
+| Serviço | `FREEPDB1` |
+| Usuário (schema) | `REMEMBERED` |
+
+1. No SQL Developer, crie uma conexão com esses valores (tipo "Nome do serviço": `FREEPDB1`).
+2. Confira se as tabelas da .NET já existem: `SELECT TABLE_NAME FROM USER_TABLES WHERE TABLE_NAME LIKE 'NET_%';`
+3. Se voltarem menos de 7 linhas, rode `scripts/script-bd.sql` inteiro (F5). Ele cria as 7 tabelas `NET_` e 2 locais semente.
+4. Repita a consulta do passo 2. Devem voltar 7 linhas.
+
+As tabelas criadas antes no Oracle FIAP (RM561489) ficam em outro banco e não servem para a produção.
 
 A connection string fica assim:
 
 ```text
-User Id=RM000000;Password=SENHA;Data Source=oracle.fiap.com.br:1521/ORCL
+User Id=REMEMBERED;Password=SENHA;Data Source=rm566234-gs-oracle.eastus.azurecontainer.io:1521/FREEPDB1
 ```
 
 ## 4. Rodar local antes de publicar
@@ -91,12 +107,12 @@ Configurar as variáveis (cole os valores reais entre as aspas):
 ```bash
 az webapp config appsettings set -g $RG -n $APP --settings \
   ASPNETCORE_ENVIRONMENT=Production \
-  "ConnectionStrings__Oracle=User Id=RM000000;Password=SENHA;Data Source=oracle.fiap.com.br:1521/ORCL" \
+  "ConnectionStrings__Oracle=User Id=REMEMBERED;Password=SENHA;Data Source=rm566234-gs-oracle.eastus.azurecontainer.io:1521/FREEPDB1" \
   "Jwt__Key=CHAVE_DA_SECAO_2" \
   Jwt__Issuer=remembered-dotnet \
   Jwt__Audience=remembered \
   Jwt__IssuersAceitos__0=remembered-java \
-  "Java__BaseUrl=https://URL-DA-API-JAVA" \
+  "Java__BaseUrl=https://rm566234-gs-api.azurewebsites.net" \
   RabbitMq__Enabled=true \
   "RabbitMq__Uri=amqps://USUARIO:SENHA@HOST/VHOST"
 ```
