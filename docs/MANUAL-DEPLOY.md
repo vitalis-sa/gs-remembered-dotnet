@@ -79,27 +79,20 @@ dotnet run --project src/CuidarDePerto.Api
 
 ## 5. Publicar no Azure App Service
 
-Os comandos usam Bash (Git Bash ou Cloud Shell). Troque `cuidar-dotnet-grupo` por um nome único.
+A API já está publicada em `https://rm566234-gs-dotnet.azurewebsites.net` (16/11/2026). Ela roda no mesmo plano B1 Linux da Java (`plan-rm566234-gs`), sem custo extra. Para republicar uma versão nova, pule para "Gerar o pacote e enviar".
+
+Os comandos usam Bash (Git Bash ou Cloud Shell).
 
 ```bash
-RG=rg-cuidar-de-perto
-APP=cuidar-dotnet-grupo
-PLANO=plan-cuidar-dotnet
-REGIAO=brazilsouth
+RG=rg-rm566234-gs
+APP=rm566234-gs-dotnet
+PLANO=plan-rm566234-gs
 ```
 
-Criar o grupo, o plano (F1 gratuito ou B1) e a Web App Linux .NET 8:
+Criar a Web App no plano da Java. O Azure Linux não oferece mais o runtime .NET 8, então a Web App usa o 10. O projeto compila para `net8.0` com `RollForward=Major`, por isso roda no runtime 10 sem mudança de código.
 
 ```bash
-az group create -n $RG -l $REGIAO
-```
-
-```bash
-az appservice plan create -g $RG -n $PLANO --is-linux --sku B1
-```
-
-```bash
-az webapp create -g $RG -p $PLANO -n $APP --runtime "DOTNETCORE:8.0"
+az webapp create -g $RG -p $PLANO -n $APP --runtime "DOTNETCORE:10.0"
 ```
 
 Configurar as variáveis (cole os valores reais entre as aspas):
@@ -117,10 +110,16 @@ az webapp config appsettings set -g $RG -n $APP --settings \
   "RabbitMq__Uri=amqps://USUARIO:SENHA@HOST/VHOST"
 ```
 
-Ligar o health check do Azure:
+Os valores reais de senha, chave e AMQP URL são os mesmos das App Settings `DB_PASSWORD`, `JWT_SECRET` e `CLOUDAMQP_URL` da Web App Java.
+
+Ligar o health check do Azure, o Always On (o consumidor do RabbitMQ precisa da API acordada) e o HTTPS obrigatório:
 
 ```bash
-az webapp config set -g $RG -n $APP --generic-configurations '{"healthCheckPath":"/health"}'
+az webapp config set -g $RG -n $APP --always-on true --generic-configurations '{"healthCheckPath":"/health"}'
+```
+
+```bash
+az webapp update -g $RG -n $APP --https-only true
 ```
 
 Gerar o pacote e enviar:
@@ -137,12 +136,12 @@ cd publish && zip -r ../app.zip . && cd ..
 az webapp deploy -g $RG -n $APP --src-path app.zip --type zip
 ```
 
-No PowerShell, troque o `zip` por `Compress-Archive -Path publish\* -DestinationPath app.zip -Force`.
+No PowerShell, troque o `zip` por `cd publish; tar.exe -a -c -f ..\app.zip *; cd ..`. O `tar.exe` grava os caminhos com `/`, que o App Service Linux exige para a pasta `runtimes`.
 
 ## 6. Conferir a publicação
 
-1. `https://$APP.azurewebsites.net/health` deve responder `Healthy`.
-2. `https://$APP.azurewebsites.net/swagger` deve abrir a documentação.
+1. `https://rm566234-gs-dotnet.azurewebsites.net/health` deve responder `Healthy` com Oracle, Java e RabbitMQ.
+2. `https://rm566234-gs-dotnet.azurewebsites.net/swagger` deve abrir a documentação.
 3. No Swagger, faça `POST /api/v1/auth/cadastro` e `POST /api/v1/auth/login`, cole o token em Authorize e chame `GET /api/v1/me`.
 4. Logs em tempo real: `az webapp log tail -g $RG -n $APP`.
 
@@ -157,7 +156,7 @@ Se a API não subir, o log mostra qual opção falhou. As mensagens mais comuns:
 
 ## 7. Ligar o app mobile
 
-1. Troque a URL base do app para `https://$APP.azurewebsites.net/api/v1`.
+1. Troque a URL base do app para `https://rm566234-gs-dotnet.azurewebsites.net/api/v1`.
 2. O login do cuidador usa a API .NET. O login do idoso usa a API Java.
 3. O token do idoso funciona na .NET porque as duas APIs usam a mesma `Jwt__Key`.
 
@@ -179,4 +178,4 @@ Compress-Archive -Path entrega\identificacao.txt -DestinationPath GS-DOTNET-GRUP
 - `appsettings.json` continua com campos vazios no GitHub.
 - Antes de cada push, `git diff --cached` deve mostrar só código, sem senha nem chave.
 - Se uma senha vazar num commit, troque a senha no serviço. Apagar o commit não basta, porque o GitHub mantém cópias.
-- Depois da avaliação, apague o grupo de recursos para não gastar crédito: `az group delete -n $RG`.
+- O grupo `rg-rm566234-gs` também guarda a API Java e o Oracle. Depois da avaliação, o grupo decide junto se apaga tudo. Para remover só a API .NET: `az webapp delete -g rg-rm566234-gs -n rm566234-gs-dotnet`.

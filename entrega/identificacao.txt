@@ -18,7 +18,8 @@ Repositório da API Java (consumida por esta API)
 https://github.com/vitalis-sa/gs-remembered-java
 
 API publicada (Swagger)
-<URL DO SWAGGER, ex.: https://cuidar-dotnet.azurewebsites.net/swagger>
+https://rm566234-gs-dotnet.azurewebsites.net/swagger
+Health check: https://rm566234-gs-dotnet.azurewebsites.net/health
 
 Vídeo / apresentação (se houver)
 <LINK>
