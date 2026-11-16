@@ -2,7 +2,7 @@ GLOBAL SOLUTION 2026/2 · CITIZENTECH
 Disciplina: Advanced Business Development with .NET
 Projeto: Cuidar de Perto · API .NET do cuidador
 
-Turma: <TURMA>
+Turma: 1TDSPV
 
 Integrantes
 - Ana Flavia Camelo · RM561489
