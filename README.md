@@ -1,4 +1,4 @@
-# Cuidar de Perto · API .NET (cuidador)
+# Remembered · API .NET (cuidador)
 
 Integrantes: Ana Flavia Camelo (RM561489), Gustavo Kenji Terada (RM562745), João Guilherme Carvalho Novaes (RM566234), Pedro Chasci Puga (RM565154) e Lucas Figueiredo Vieira (RM561342).
 
@@ -19,9 +19,9 @@ App (React Native) ──REST+JWT──► API .NET ──HTTP (token do cuidado
 
 | Pasta | Conteúdo |
 | --- | --- |
-| `src/CuidarDePerto.Api/Features` | Um arquivo de endpoints por funcionalidade: Auth, Vinculos, Alertas, Consultas, Locais, Relatorios |
-| `src/CuidarDePerto.Api/Comum` | Segurança (política `CuidadorVinculado`), idempotência, validação, ProblemDetails, paginação |
-| `src/CuidarDePerto.Api/Infra` | EF Core, cliente da API Java, RabbitMQ, push do Expo, health checks, registro de serviços |
+| `src/Remembered.Api/Features` | Um arquivo de endpoints por funcionalidade: Auth, Vinculos, Alertas, Consultas, Locais, Relatorios |
+| `src/Remembered.Api/Comum` | Segurança (política `CuidadorVinculado`), idempotência, validação, ProblemDetails, paginação |
+| `src/Remembered.Api/Infra` | EF Core, cliente da API Java, RabbitMQ, push do Expo, health checks, registro de serviços |
 | `tests/` | Testes unitários e de integração |
 | `scripts/script-bd.sql` | DDL Oracle das tabelas NET_ |
 
@@ -30,7 +30,7 @@ App (React Native) ──REST+JWT──► API .NET ──HTTP (token do cuidado
 1. Crie as tabelas: rode `scripts/script-bd.sql` no Oracle.
 2. Suba o RabbitMQ local: `docker compose up -d` (painel em http://localhost:15672, guest/guest).
 3. Configure as variáveis de ambiente (modelo em `.env.example`).
-4. Rode a API: `dotnet run --project src/CuidarDePerto.Api`.
+4. Rode a API: `dotnet run --project src/Remembered.Api`.
 5. Abra o Swagger em http://localhost:5080/swagger. Use o botão Authorize com o token do login.
 
 Publicação no Azure, credenciais e montagem da entrega: [docs/MANUAL-DEPLOY.md](docs/MANUAL-DEPLOY.md).

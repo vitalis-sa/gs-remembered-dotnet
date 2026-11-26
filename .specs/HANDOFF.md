@@ -1,7 +1,7 @@
 # Transição
 
 **Data:** 2026-11-14
-**Feature:** API .NET do cuidador (seção 4 do plano "Cuidar de Perto")
+**Feature:** API .NET do cuidador (seção 4 do plano "Remembered")
 **Tarefa:** integração com a API Java validada ponta a ponta contra serviços reais; sem pendências abertas desta sessão
 
 ## Concluído ✓

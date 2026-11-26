@@ -1,4 +1,4 @@
--- Cuidar de Perto · API .NET
+-- Remembered · API .NET
 -- DDL Oracle das tabelas NET_ (Oracle 12c ou superior: colunas IDENTITY).
 -- IDOSO_ID é referência lógica a TB_USUARIO da API Java, sem chave estrangeira entre TB_ e NET_.
 -- Rode com o mesmo usuário que a connection string ConnectionStrings__Oracle usa.
