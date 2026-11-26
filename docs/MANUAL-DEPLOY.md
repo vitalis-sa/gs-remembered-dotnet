@@ -1,4 +1,4 @@
-# Manual de publicação · API .NET Cuidar de Perto
+# Manual de publicação · API .NET Remembered
 
 Este manual leva a API do zero até uma URL pública que o app mobile consome. Siga as seções na ordem.
 
@@ -71,7 +71,7 @@ User Id=REMEMBERED;Password=SENHA;Data Source=rm566234-gs-oracle.eastus.azurecon
 Get-Content .env | Where-Object { $_ -match '^[^#].*=' } | ForEach-Object {
   $n, $v = $_ -split '=', 2; [Environment]::SetEnvironmentVariable($n, $v)
 }
-dotnet run --project src/CuidarDePerto.Api
+dotnet run --project src/Remembered.Api
 ```
 
 3. Abra http://localhost:5080/health. O esperado é `"status":"Healthy"`.
@@ -125,7 +125,7 @@ az webapp update -g $RG -n $APP --https-only true
 Gerar o pacote e enviar:
 
 ```bash
-dotnet publish src/CuidarDePerto.Api -c Release -o publish
+dotnet publish src/Remembered.Api -c Release -o publish
 ```
 
 ```bash

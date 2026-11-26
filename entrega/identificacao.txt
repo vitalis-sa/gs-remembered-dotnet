@@ -1,6 +1,6 @@
 GLOBAL SOLUTION 2026/2 · CITIZENTECH
 Disciplina: Advanced Business Development with .NET
-Projeto: Cuidar de Perto · API .NET do cuidador
+Projeto: Remembered · API .NET do cuidador
 
 Turma: 1TDSPV
 
